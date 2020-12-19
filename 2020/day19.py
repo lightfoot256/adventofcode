@@ -1,54 +1,39 @@
 # Day 19
 
-import regex
+import re
 
-def resolve(lookup, rule, maxdepth):
+
+def resolve(rules, rule, maxdepth):
 
     if maxdepth == 0:
         return ''
 
-    parts = lookup[rule]
+    tokens = rules[rule]
+    regex = []
 
-    foundOr = False
-    result = []
+    for token in tokens:
+        if token[0] == '\"':
+            regex.append(token[1:-1])
+        elif token == '|':
+            regex.append('|')
+        else:
+            regex.append(resolve(rules, token, maxdepth-1))
 
-    for p in parts:
-        if p.isnumeric():
-            result.append(resolve(lookup, int(p), maxdepth-1))
-        elif p == '|':
-            foundOr = True
-            result.append('|')
-        elif p[0] == '\"':
-            result.append(p[1:-1])
-
-    if foundOr:
-        return '(' + ''.join(result) + ')'
-    else:
-        return ''.join(result)
+    return '(' + ''.join(regex) + ')'
 
 
 def part1(file):
-    whole = open(file, 'r').read()
+    rules_str, messages_str = open(file, 'r').read().split('\n\n')
 
-    records = whole.split('\n\n')
-    rules = records[0].split('\n')
-    messages = records[1].split('\n')
+    rules = {}
+    for line in rules_str.split('\n'):
+        rule, definition = line.split(':')
+        rules[rule] = definition.split()
 
-    rlookup = {}
-
-    for line in rules:
-        parts = line.split(':')
-        rule = int(parts[0])
-        defn = parts[1]
-
-        rlookup[rule] = defn.split()
-
-    pattern = '^' + resolve(rlookup, 0, 50) + '$'
-
-    r = regex.compile(pattern)
+    r = re.compile('^' + resolve(rules, '0', 15) + '$')
 
     count = 0
-    for message in messages:
+    for message in messages_str.split('\n'):
         if r.match(message):
             count += 1
 
@@ -56,32 +41,23 @@ def part1(file):
 
 
 def part2(file):
-    whole = open(file, 'r').read()
+    rules_str, messages_str = open(file, 'r').read().split('\n\n')
 
-    records = whole.split('\n\n')
-    rules = records[0].split('\n')
-    messages = records[1].split('\n')
+    rules = {}
+    for line in rules_str.split('\n'):
+        rule, definition = line.split(':')
 
-    rlookup = {}
+        if rule == '8':
+            definition = "42 | 42 8"
+        if rule == '11':
+            definition = "42 31 | 42 11 31"
 
-    for line in rules:
-        parts = line.split(':')
-        rule = int(parts[0])
-        defn = parts[1]
+        rules[rule] = definition.split()
 
-        if rule == 8:
-            defn = "42 | 42 8"
-        if rule == 11:
-            defn = "42 31 | 42 11 31"
-
-        rlookup[rule] = defn.split()
-
-    pattern = '^' + resolve(rlookup, 0, 50) + '$'
-
-    r = regex.compile(pattern)
+    r = re.compile('^' + resolve(rules, '0', 15) + '$')
 
     count = 0
-    for message in messages:
+    for message in messages_str.split('\n'):
         if r.match(message):
             count += 1
 
