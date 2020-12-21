@@ -151,12 +151,11 @@ def part1(file):
     # find the 4 tiles which have 2 sides that dont match any other side?
 
     corners = {}
+    edges = {}
+    middle = {}
 
     for tile in tiles:
-        #print('Tile: ', tile)
-
         for var in tiles[tile]:
-            #print(' -', var)
 
             matchedEdges = 0
             for e in tiles[tile][var]['edges']:
@@ -173,8 +172,14 @@ def part1(file):
 
             if matchedEdges == 16:
                 corners[tile] = 1
+            if matchedEdges == 24:
+                edges[tile] = 1
+            if matchedEdges == 32:
+                middle[tile] = 1
 
     print(corners)
+    print(edges)
+    print(middle)
 
     result = 1
     for c in corners:
@@ -189,10 +194,10 @@ def part2(file):
 # Run
 
 
-print("# Part 1")
-print("- Example:", part1("day20/example.txt"), 20899048083289)
-print("- Input:", part1("day20/input.txt"), 18482479935793)
+# print("# Part 1")
+# print("- Example:", part1("day20/example.txt"), 20899048083289)
+# print("- Input:", part1("day20/input.txt"), 18482479935793)
 
-# print("# Part 2")
-# print("- Example:", part2("day20/example2.txt"), 12)
-# print("- Input:", part2("day20/input.txt"), 323)
+print("# Part 2")
+print("- Example:", part1("day20/example.txt"), 12)
+#print("- Input:", part2("day20/input.txt"), 323)
